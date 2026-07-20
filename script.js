@@ -12,7 +12,125 @@ document.addEventListener('DOMContentLoaded', () => {
     initHeroCube();
     initFormAnimation();
     initSmoothScroll();
+    loadYouTubeVideos();
 });
+
+/* ========================================
+   YouTube Dynamic Videos
+   ======================================== */
+
+const YOUTUBE_CHANNEL_ID = 'UCBYnAv5IkSBovWPNTb9YlCA';
+const YOUTUBE_RSS_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${YOUTUBE_CHANNEL_ID}`;
+const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+
+async function loadYouTubeVideos() {
+    const grid = document.getElementById('youtubeGrid');
+    
+    try {
+        const response = await fetch(`${CORS_PROXY}${encodeURIComponent(YOUTUBE_RSS_URL)}`);
+        const text = await response.text();
+        
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(text, 'text/xml');
+        const entries = xml.querySelectorAll('entry');
+        
+        if (entries.length === 0) {
+            throw new Error('Nenhum vídeo encontrado');
+        }
+        
+        // Converter para array e embaralhar
+        const videos = Array.from(entries).map(entry => ({
+            id: entry.querySelector('yt\\:videoId, videoId')?.textContent || '',
+            title: entry.querySelector('title')?.textContent || 'Sem título',
+            thumbnail: entry.querySelector('media\\:thumbnail, thumbnail')?.getAttribute('url') || '',
+            views: entry.querySelector('media\\:statistics, statistics')?.getAttribute('views') || '0',
+            published: entry.querySelector('published')?.textContent || ''
+        })).filter(v => v.id);
+        
+        // Embaralhar e pegar 3 aleatórios
+        const shuffled = videos.sort(() => Math.random() - 0.5);
+        const selected = shuffled.slice(0, 3);
+        
+        // Renderizar
+        grid.innerHTML = selected.map(video => `
+            <a href="https://www.youtube.com/watch?v=${video.id}" target="_blank" class="youtube-card-3d">
+                <div class="video-thumbnail-3d">
+                    <img src="${video.thumbnail}" alt="${video.title}" loading="lazy">
+                    <div class="play-button-3d">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="video-views-3d">
+                        <i class="fas fa-eye"></i> ${formatViews(video.views)}
+                    </div>
+                </div>
+                <div class="video-info-3d">
+                    <h4>${truncate(video.title, 50)}</h4>
+                    <p>${timeAgo(video.published)}</p>
+                </div>
+            </a>
+        `).join('');
+        
+    } catch (error) {
+        console.error('Erro ao carregar vídeos:', error);
+        // Fallback com vídeos estáticos
+        grid.innerHTML = `
+            <a href="https://www.youtube.com/@KastrusGamer/shorts" target="_blank" class="youtube-card-3d">
+                <div class="video-thumbnail-3d">
+                    <div class="thumbnail-placeholder"><i class="fab fa-youtube"></i></div>
+                    <div class="play-button-3d"><i class="fas fa-play"></i></div>
+                </div>
+                <div class="video-info-3d">
+                    <h4>Gameplays & Clips</h4>
+                    <p>Veja no canal</p>
+                </div>
+            </a>
+            <a href="https://www.youtube.com/@KastrusGamer" target="_blank" class="youtube-card-3d">
+                <div class="video-thumbnail-3d">
+                    <div class="thumbnail-placeholder"><i class="fab fa-youtube"></i></div>
+                    <div class="play-button-3d"><i class="fas fa-play"></i></div>
+                </div>
+                <div class="video-info-3d">
+                    <h4>Últimos Uploads</h4>
+                    <p>Inscreva-se!</p>
+                </div>
+            </a>
+            <a href="https://www.youtube.com/@KastrusGamer/shorts" target="_blank" class="youtube-card-3d">
+                <div class="video-thumbnail-3d">
+                    <div class="thumbnail-placeholder"><i class="fab fa-youtube"></i></div>
+                    <div class="play-button-3d"><i class="fas fa-play"></i></div>
+                </div>
+                <div class="video-info-3d">
+                    <h4>Shorts Exclusivos</h4>
+                    <p>Conteúdo rápido</p>
+                </div>
+            </a>
+        `;
+    }
+}
+
+function formatViews(views) {
+    const num = parseInt(views);
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toString();
+}
+
+function truncate(str, len) {
+    return str.length > len ? str.substring(0, len) + '...' : str;
+}
+
+function timeAgo(dateStr) {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000);
+    
+    if (diff < 60) return 'Agora mesmo';
+    if (diff < 3600) return `${Math.floor(diff / 60)} min atrás`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} h atrás`;
+    if (diff < 2592000) return `${Math.floor(diff / 86400)} dias atrás`;
+    if (diff < 31536000) return `${Math.floor(diff / 2592000)} meses atrás`;
+    return `${Math.floor(diff / 31536000)} anos atrás`;
+}
 
 /* ========================================
    Particles System
