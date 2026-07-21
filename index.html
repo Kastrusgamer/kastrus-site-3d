@@ -346,11 +346,72 @@
         </div>
     </section>
 
+    <!-- ═══════════════════ INTELLIGENCE FEED ═══════════════════ -->
+    <section class="intel" id="intel" data-section>
+        <div class="intel__content">
+            <div class="intel__header">
+                <span class="section-num" data-anim="fade-up">07</span>
+                <div class="intel__header-row" data-anim="fade-up" data-delay="0.1">
+                    <div>
+                        <h2 class="intel__title">KASTRUS <span class="accent">INTELLIGENCE FEED</span></h2>
+                        <p class="intel__sub">Centro de inteligência tecnológica — Atualizações automatizadas</p>
+                    </div>
+                    <div class="intel__status">
+                        <span class="intel__status-dot"></span>
+                        <span class="intel__status-text">FEED ATIVO</span>
+                        <span class="intel__status-time" id="intelTime"></span>
+                    </div>
+                </div>
+                <div class="intel__line" data-anim="scale-x"></div>
+            </div>
+
+            <!-- Loading State -->
+            <div class="intel__loading" id="intelLoading">
+                <div class="intel__loading-spinner"></div>
+                <span>AGREGANDO INTELIGÊNCIA...</span>
+            </div>
+
+            <!-- Featured News -->
+            <div class="intel__featured" id="intelFeatured" style="display:none" data-anim="fade-up" data-delay="0.2">
+                <div class="intel-card intel-card--featured">
+                    <div class="intel-card__img">
+                        <img id="featImg" src="" alt="">
+                        <div class="intel-card__overlay"></div>
+                        <span class="intel-card__cat" id="featCat"></span>
+                    </div>
+                    <div class="intel-card__body">
+                        <div class="intel-card__meta">
+                            <span class="intel-card__source" id="featSource"></span>
+                            <span class="intel-card__date" id="featDate"></span>
+                            <span class="intel-card__read" id="featRead"></span>
+                        </div>
+                        <h3 class="intel-card__title" id="featTitle"></h3>
+                        <p class="intel-card__desc" id="featDesc"></p>
+                        <a class="cta cta--primary cta--sm" id="featLink" href="#" target="_blank">
+                            <span class="cta__text">LER INTELIGÊNCIA COMPLETA <i class="fas fa-arrow-right"></i></span>
+                            <span class="cta__glow"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid News -->
+            <div class="intel__grid" id="intelGrid"></div>
+
+            <div class="intel__footer" data-anim="fade-up">
+                <button class="cta cta--outline cta--sm" id="intelLoadMore">
+                    <span class="cta__text">CARREGAR MAIS INTELIGÊNCIA</span>
+                </button>
+                <span class="intel__count" id="intelCount"></span>
+            </div>
+        </div>
+    </section>
+
     <!-- ═══════════════════ CONTACT — FULLSCREEN ═══════════════════ -->
     <section class="contato" id="comunicacao" data-section>
         <div class="contato__content">
             <div class="contato__header">
-                <span class="section-num" data-anim="fade-up">07</span>
+                <span class="section-num" data-anim="fade-up">08</span>
                 <h2 class="contato__title" data-anim="fade-up" data-delay="0.1">
                     CANAL DE <span class="accent">COMUNICAÇÃO</span>
                 </h2>

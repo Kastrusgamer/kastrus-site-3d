@@ -37,6 +37,7 @@
         initYouTube();
         initForm();
         initCounters();
+        initIntelFeed();
     }
 
     /* ─── LENIS SMOOTH SCROLL ─── */
@@ -441,6 +442,235 @@
             }, { threshold: 0.5 });
             observer.observe(el);
         });
+    }
+
+    /* ─── INTELLIGENCE FEED ─── */
+    const INTEL_FEEDS = [
+        { name: 'TecMundo', url: 'https://www.tecmundo.com.br/rss', cat: 'Tecnologia' },
+        { name: 'Canaltech', url: 'https://canaltech.com.br/rss', cat: 'Inovação' },
+        { name: 'The Verge', url: 'https://www.theverge.com/rss/index.xml', cat: 'Tech' },
+        { name: 'TechCrunch', url: 'https://techcrunch.com/feed/', cat: 'Startups' },
+        { name: 'Ars Technica', url: 'https://feeds.arstechnica.com/arstechnica/index', cat: 'Ciência' },
+        { name: 'Wired', url: 'https://www.wired.com/feed/rss', cat: 'Cultura Tech' },
+    ];
+    const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+    const CACHE_KEY = 'kr_intel_cache';
+    const CACHE_TTL = 86400000; // 24h
+    let allArticles = [];
+    let displayedCount = 0;
+    const PER_PAGE = 9;
+
+    function initIntelFeed() {
+        const cached = loadCache();
+        if (cached) {
+            allArticles = cached;
+            renderIntelFeed();
+            return;
+        }
+        fetchAllFeeds();
+    }
+
+    function loadCache() {
+        try {
+            const raw = localStorage.getItem(CACHE_KEY);
+            if (!raw) return null;
+            const data = JSON.parse(raw);
+            if (Date.now() - data.ts > CACHE_TTL) return null;
+            return data.articles;
+        } catch { return null; }
+    }
+
+    function saveCache(articles) {
+        try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), articles }));
+        } catch {}
+    }
+
+    async function fetchAllFeeds() {
+        const loading = document.getElementById('intelLoading');
+        const promises = INTEL_FEEDS.map(feed => fetchFeed(feed));
+        const results = await Promise.allSettled(promises);
+        const articles = [];
+        results.forEach(r => {
+            if (r.status === 'fulfilled' && r.value) articles.push(...r.value);
+        });
+
+        // Sort by date
+        articles.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // Deduplicate by title similarity
+        const seen = new Set();
+        allArticles = articles.filter(a => {
+            const key = a.title.substring(0, 40).toLowerCase();
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+
+        saveCache(allArticles);
+        if (loading) loading.style.display = 'none';
+        renderIntelFeed();
+    }
+
+    async function fetchFeed(feed) {
+        try {
+            const res = await fetch(`${CORS_PROXY}${encodeURIComponent(feed.url)}`);
+            const text = await res.text();
+            const xml = new DOMParser().parseFromString(text, 'text/xml');
+
+            // Try RSS 2.0
+            let items = xml.querySelectorAll('item');
+            // Try Atom
+            if (!items.length) items = xml.querySelectorAll('entry');
+
+            return Array.from(items).slice(0, 10).map(item => {
+                const title = item.querySelector('title')?.textContent || '';
+                const link = item.querySelector('link')?.textContent ||
+                             item.querySelector('link')?.getAttribute('href') || '#';
+                const desc = cleanHtml(
+                    item.querySelector('description')?.textContent ||
+                    item.querySelector('summary')?.textContent ||
+                    item.querySelector('content')?.textContent || ''
+                );
+                const date = item.querySelector('pubDate')?.textContent ||
+                             item.querySelector('published')?.textContent ||
+                             item.querySelector('updated')?.textContent || '';
+                const img = extractImage(item);
+
+                return {
+                    title,
+                    link,
+                    desc,
+                    date,
+                    img,
+                    source: feed.name,
+                    category: feed.cat,
+                    readTime: Math.max(2, Math.ceil(desc.split(' ').length / 200)) + ' min',
+                };
+            }).filter(a => a.title && a.title.length > 5);
+        } catch (e) {
+            console.warn(`Feed error [${feed.name}]:`, e);
+            return [];
+        }
+    }
+
+    function extractImage(item) {
+        // RSS media:thumbnail
+        const mediaThumb = item.querySelector('media\\:thumbnail, thumbnail');
+        if (mediaThumb) return mediaThumb.getAttribute('url');
+        // RSS media:content
+        const mediaContent = item.querySelector('media\\:content, content');
+        if (mediaContent) return mediaContent.getAttribute('url');
+        // enclosure
+        const enc = item.querySelector('enclosure');
+        if (enc && enc.getAttribute('type')?.startsWith('image')) return enc.getAttribute('url');
+        // Parse from description HTML
+        const desc = item.querySelector('description')?.textContent || '';
+        const match = desc.match(/<img[^>]+src=["']([^"']+)["']/);
+        if (match) return match[1];
+        // Default placeholder
+        return '';
+    }
+
+    function cleanHtml(html) {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        return tmp.textContent?.trim().substring(0, 200) || '';
+    }
+
+    function renderIntelFeed() {
+        if (!allArticles.length) {
+            document.getElementById('intelLoading').innerHTML =
+                '<span style="color:var(--text2)">NENHUMA INTELIGÊNCIA DISPONÍVEL</span>';
+            return;
+        }
+
+        // Update timestamp
+        const timeEl = document.getElementById('intelTime');
+        if (timeEl) timeEl.textContent = new Date().toLocaleString('pt-BR');
+
+        // Featured
+        const feat = allArticles[0];
+        document.getElementById('intelFeatured').style.display = 'block';
+        const featImg = document.getElementById('featImg');
+        if (feat.img) {
+            featImg.src = feat.img;
+            featImg.onerror = () => featImg.parentElement.style.display = 'none';
+        } else {
+            featImg.parentElement.style.display = 'none';
+        }
+        document.getElementById('featCat').textContent = feat.category;
+        document.getElementById('featSource').textContent = feat.source;
+        document.getElementById('featDate').textContent = formatDate(feat.date);
+        document.getElementById('featRead').textContent = feat.readTime + ' leitura';
+        document.getElementById('featTitle').textContent = feat.title;
+        document.getElementById('featDesc').textContent = feat.desc;
+        document.getElementById('featLink').href = feat.link;
+
+        // Grid
+        displayedCount = PER_PAGE;
+        renderGrid();
+
+        // Load more button
+        const loadMore = document.getElementById('intelLoadMore');
+        loadMore.addEventListener('click', () => {
+            displayedCount += PER_PAGE;
+            renderGrid();
+        });
+
+        updateCount();
+    }
+
+    function renderGrid() {
+        const grid = document.getElementById('intelGrid');
+        const slice = allArticles.slice(1, displayedCount);
+
+        grid.innerHTML = slice.map(a => `
+            <a href="${a.link}" target="_blank" class="intel-card">
+                <div class="intel-card__thumb">
+                    ${a.img
+                        ? `<img src="${a.img}" alt="${a.title}" loading="lazy" onerror="this.parentElement.style.display='none'">`
+                        : `<div style="width:100%;height:100%;background:var(--detail);display:flex;align-items:center;justify-content:center"><i class="fas fa-microchip" style="font-size:2rem;color:var(--orange);opacity:0.3"></i></div>`
+                    }
+                    <div class="intel-card__thumb-overlay"></div>
+                    <span class="intel-card__cat">${a.category}</span>
+                </div>
+                <div class="intel-card__content">
+                    <div class="intel-card__meta">
+                        <span class="intel-card__source">${a.source}</span>
+                        <span class="intel-card__date">${formatDate(a.date)}</span>
+                        <span class="intel-card__read">${a.readTime}</span>
+                    </div>
+                    <h4 class="intel-card__title">${a.title}</h4>
+                    <p class="intel-card__desc">${a.desc}</p>
+                </div>
+            </a>
+        `).join('');
+
+        // Animate new cards
+        if (window.gsap) {
+            gsap.from('.intel-card', {
+                opacity: 0, y: 40, stagger: 0.08, duration: 0.6, ease: 'power3.out',
+                scrollTrigger: { trigger: '.intel__grid', start: 'top 90%' }
+            });
+        }
+
+        updateCount();
+    }
+
+    function updateCount() {
+        const el = document.getElementById('intelCount');
+        const showing = Math.min(displayedCount, allArticles.length);
+        el.textContent = `${showing} DE ${allArticles.length} RELATÓRIOS`;
+        const btn = document.getElementById('intelLoadMore');
+        btn.style.display = displayedCount >= allArticles.length ? 'none' : '';
+    }
+
+    function formatDate(d) {
+        if (!d) return '';
+        try {
+            return new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+        } catch { return d; }
     }
 
 })();

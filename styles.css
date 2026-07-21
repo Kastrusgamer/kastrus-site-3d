@@ -241,6 +241,62 @@ input,textarea{font-family:var(--font-b)}
 .sch-card__status--info span{background:var(--blue)}
 .agenda__note{text-align:center;color:var(--text2);font-size:0.8rem;font-style:italic}
 
+/* ═══════════════════ INTELLIGENCE FEED ═══════════════════ */
+.intel{position:relative;min-height:100vh;z-index:2;padding:6rem 2rem;border-top:1px solid var(--border);background:linear-gradient(180deg,var(--bg) 0%,rgba(13,17,23,0.5) 50%,var(--bg) 100%)}
+.intel__content{max-width:1400px;margin:0 auto}
+.intel__header{margin-bottom:3rem}
+.intel__header-row{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem}
+.intel__title{font-family:var(--font-d);font-size:clamp(1.6rem,3.5vw,2.5rem);font-weight:800;letter-spacing:2px}
+.intel__sub{color:var(--text2);font-size:0.85rem;margin-top:0.4rem}
+.intel__status{display:flex;align-items:center;gap:0.6rem;padding:0.5rem 1rem;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);border-radius:4px}
+.intel__status-dot{width:7px;height:7px;background:#22c55e;border-radius:50%;animation:pulse 2s infinite}
+.intel__status-text{font-family:var(--font-h);font-size:0.55rem;font-weight:700;letter-spacing:2px;color:#22c55e}
+.intel__status-time{font-family:var(--font-h);font-size:0.55rem;font-weight:600;letter-spacing:1px;color:var(--text2);margin-left:0.3rem}
+.intel__line{width:60px;height:2px;background:var(--orange);margin-top:1.2rem;transform-origin:left;box-shadow:0 0 15px rgba(255,122,0,0.4)}
+
+/* Loading */
+.intel__loading{display:flex;flex-direction:column;align-items:center;gap:1rem;padding:5rem;color:var(--text2);font-family:var(--font-h);font-size:0.65rem;letter-spacing:3px}
+.intel__loading-spinner{width:40px;height:40px;border:2px solid var(--detail);border-top-color:var(--orange);border-radius:50%;animation:spin 1s linear infinite}
+
+/* Featured Card */
+.intel__featured{margin-bottom:2rem}
+.intel-card--featured{display:grid;grid-template-columns:1.2fr 1fr;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:all 0.5s var(--ease);cursor:pointer}
+.intel-card--featured:hover{border-color:rgba(255,122,0,0.3);box-shadow:0 30px 60px rgba(0,0,0,0.5),0 0 40px rgba(255,122,0,0.08);transform:translateY(-4px)}
+.intel-card__img{position:relative;overflow:hidden;min-height:320px}
+.intel-card__img img{width:100%;height:100%;object-fit:cover;transition:transform 0.6s var(--ease)}
+.intel-card--featured:hover .intel-card__img img{transform:scale(1.05)}
+.intel-card__overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(5,6,8,0.3) 0%,rgba(5,6,8,0) 50%,rgba(255,122,0,0.1) 100%);pointer-events:none}
+.intel-card__cat{position:absolute;top:1rem;left:1rem;padding:0.3rem 0.8rem;background:var(--orange);color:var(--bg);font-family:var(--font-h);font-size:0.55rem;font-weight:700;letter-spacing:2px;border-radius:2px;z-index:2}
+.intel-card__body{padding:2rem;display:flex;flex-direction:column;justify-content:center}
+.intel-card__meta{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
+.intel-card__source{font-family:var(--font-h);font-size:0.6rem;font-weight:700;letter-spacing:2px;color:var(--orange);text-transform:uppercase}
+.intel-card__date,.intel-card__read{font-size:0.7rem;color:var(--text2)}
+.intel-card__read::before{content:'•';margin-right:0.5rem}
+.intel-card__title{font-family:var(--font-h);font-size:1.3rem;font-weight:700;line-height:1.4;margin-bottom:0.8rem;color:var(--text)}
+.intel-card__desc{color:var(--text2);font-size:0.9rem;line-height:1.7;margin-bottom:1.5rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+/* Grid Cards */
+.intel__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:2rem}
+.intel-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;transition:all 0.4s var(--ease);cursor:pointer;display:flex;flex-direction:column}
+.intel-card:hover{transform:translateY(-6px);border-color:rgba(255,122,0,0.3);box-shadow:0 20px 40px rgba(0,0,0,0.4),0 0 20px rgba(255,122,0,0.06)}
+.intel-card__thumb{position:relative;aspect-ratio:16/9;overflow:hidden}
+.intel-card__thumb img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s var(--ease)}
+.intel-card:hover .intel-card__thumb img{transform:scale(1.08)}
+.intel-card__thumb-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(5,6,8,0.8) 100%);pointer-events:none}
+.intel-card__thumb .intel-card__cat{position:absolute;bottom:0.8rem;left:0.8rem;top:auto}
+.intel-card__content{padding:1.2rem;flex:1;display:flex;flex-direction:column}
+.intel-card__meta{display:flex;align-items:center;gap:0.6rem;margin-bottom:0.6rem;flex-wrap:wrap}
+.intel-card__source{font-family:var(--font-h);font-size:0.55rem;font-weight:700;letter-spacing:2px;color:var(--orange)}
+.intel-card__date{font-size:0.65rem;color:var(--text2)}
+.intel-card__read{font-size:0.65rem;color:var(--text2)}
+.intel-card__read::before{content:'•';margin-right:0.4rem}
+.intel-card__title{font-family:var(--font-h);font-size:0.85rem;font-weight:600;line-height:1.4;margin-bottom:0.5rem;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+.intel-card__desc{color:var(--text2);font-size:0.78rem;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* Footer / Load More */
+.intel__footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.intel__count{font-family:var(--font-h);font-size:0.6rem;letter-spacing:2px;color:var(--text2)}
+
 /* ─── CONTACT ─── */
 .contato__header{margin-bottom:2.5rem}
 .contato__title{font-family:var(--font-d);font-size:clamp(1.6rem,3.5vw,2.5rem);font-weight:800;letter-spacing:2px}
@@ -291,6 +347,15 @@ input,textarea{font-family:var(--font-b)}
     .footer__links{flex-wrap:wrap;justify-content:center}
     .footer__socials{justify-content:center}
     .footer__bottom{flex-direction:column;gap:0.8rem;text-align:center}
+}
+@media(max-width:1024px){
+    .intel-card--featured{grid-template-columns:1fr}
+    .intel-card__img{min-height:250px}
+    .intel__grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:768px){
+    .intel__grid{grid-template-columns:1fr}
+    .intel__header-row{flex-direction:column;align-items:flex-start}
 }
 
 /* ─── SCROLLBAR ─── */
