@@ -345,25 +345,23 @@
     /* ─── YOUTUBE ─── */
     const YT_ID = 'UCBYnAv5IkSBovWPNTb9YlCA';
     const YT_RSS = `https://www.youtube.com/feeds/videos.xml?channel_id=${YT_ID}`;
-    const CORS = 'https://api.allorigins.win/raw?url=';
+    const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
 
     async function initYouTube() {
         const grid = document.getElementById('ytGrid');
         if (!grid) return;
 
         try {
-            const res = await fetch(`${CORS}${encodeURIComponent(YT_RSS)}`);
-            const text = await res.text();
-            const xml = new DOMParser().parseFromString(text, 'text/xml');
-            const entries = xml.querySelectorAll('entry');
-            if (!entries.length) throw new Error('No videos');
+            const res = await fetch(`${RSS2JSON}${encodeURIComponent(YT_RSS)}`);
+            const data = await res.json();
+            if (!data.items || !data.items.length) throw new Error('No videos');
 
-            const videos = Array.from(entries).map(e => ({
-                id: e.querySelector('yt\\:videoId, videoId')?.textContent || '',
-                title: e.querySelector('title')?.textContent || '',
-                thumb: e.querySelector('media\\:thumbnail, thumbnail')?.getAttribute('url') || '',
-                views: e.querySelector('media\\:statistics, statistics')?.getAttribute('views') || '0',
-                published: e.querySelector('published')?.textContent || ''
+            const videos = data.items.map(item => ({
+                id: (item.link || '').match(/v=([a-zA-Z0-9_-]{11})/)?.[1] || '',
+                title: item.title || '',
+                thumb: item.thumbnail || item.enclosure?.link || '',
+                views: '0',
+                published: item.pubDate || ''
             })).filter(v => v.id);
 
             const picked = [...videos].sort(() => Math.random() - 0.5).slice(0, 3);
@@ -453,7 +451,6 @@
         { name: 'Ars Technica', url: 'https://feeds.arstechnica.com/arstechnica/index', cat: 'Ciência' },
         { name: 'Wired', url: 'https://www.wired.com/feed/rss', cat: 'Cultura Tech' },
     ];
-    const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
     const CACHE_KEY = 'kr_intel_cache';
     const CACHE_TTL = 86400000; // 24h
     let allArticles = [];
@@ -514,28 +511,16 @@
 
     async function fetchFeed(feed) {
         try {
-            const res = await fetch(`${CORS_PROXY}${encodeURIComponent(feed.url)}`);
-            const text = await res.text();
-            const xml = new DOMParser().parseFromString(text, 'text/xml');
+            const res = await fetch(`${RSS2JSON}${encodeURIComponent(feed.url)}`);
+            const data = await res.json();
+            if (!data.items) return [];
 
-            // Try RSS 2.0
-            let items = xml.querySelectorAll('item');
-            // Try Atom
-            if (!items.length) items = xml.querySelectorAll('entry');
-
-            return Array.from(items).slice(0, 10).map(item => {
-                const title = item.querySelector('title')?.textContent || '';
-                const link = item.querySelector('link')?.textContent ||
-                             item.querySelector('link')?.getAttribute('href') || '#';
-                const desc = cleanHtml(
-                    item.querySelector('description')?.textContent ||
-                    item.querySelector('summary')?.textContent ||
-                    item.querySelector('content')?.textContent || ''
-                );
-                const date = item.querySelector('pubDate')?.textContent ||
-                             item.querySelector('published')?.textContent ||
-                             item.querySelector('updated')?.textContent || '';
-                const img = extractImage(item);
+            return data.items.slice(0, 10).map(item => {
+                const title = item.title || '';
+                const link = item.link || '#';
+                const desc = cleanHtml(item.description || item.summary || item.content || '');
+                const date = item.pubDate || item.published || item.updated || '';
+                const img = item.thumbnail || item.enclosure?.link || extractImageFromDesc(item.description || '');
 
                 return {
                     title,
@@ -554,22 +539,9 @@
         }
     }
 
-    function extractImage(item) {
-        // RSS media:thumbnail
-        const mediaThumb = item.querySelector('media\\:thumbnail, thumbnail');
-        if (mediaThumb) return mediaThumb.getAttribute('url');
-        // RSS media:content
-        const mediaContent = item.querySelector('media\\:content, content');
-        if (mediaContent) return mediaContent.getAttribute('url');
-        // enclosure
-        const enc = item.querySelector('enclosure');
-        if (enc && enc.getAttribute('type')?.startsWith('image')) return enc.getAttribute('url');
-        // Parse from description HTML
-        const desc = item.querySelector('description')?.textContent || '';
-        const match = desc.match(/<img[^>]+src=["']([^"']+)["']/);
-        if (match) return match[1];
-        // Default placeholder
-        return '';
+    function extractImageFromDesc(html) {
+        const match = html.match(/<img[^>]+src=["']([^"']+)["']/);
+        return match ? match[1] : '';
     }
 
     function cleanHtml(html) {
