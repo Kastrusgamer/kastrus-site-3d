@@ -3,121 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kastrus — Página Oficial | 3D Experience</title>
+    <title>KASTRUS — Operações em Tempo Real</title>
+    <meta name="description" content="Kastrus - Conteúdo diário com gameplays, clipes e vídeos. Experiência imersiva em universo sci-fi.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- 3D Background -->
-    <div class="bg-3d">
-        <div class="particles" id="particles"></div>
-        <div class="grid-plane"></div>
-        <div class="floating-cubes" id="floatingCubes"></div>
-    </div>
+    <!-- Scan Lines Overlay -->
+    <div class="scanlines"></div>
 
-    <!-- Navigation -->
-    <nav class="nav-3d" id="mainNav">
-        <div class="nav-container">
-            <a href="#" class="logo-3d">
-                <span class="logo-text">KA</span>
-                <span class="logo-glow">STRUS</span>
+    <!-- Particle System -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Background Grid -->
+    <div class="bg-grid"></div>
+
+    <!-- ═══════════════════ NAVIGATION ═══════════════════ -->
+    <nav class="nav" id="mainNav">
+        <div class="nav__inner">
+            <a href="#" class="nav__logo">
+                <span class="nav__logo-icon">◆</span>
+                <span class="nav__logo-text">KASTRUS</span>
+                <span class="nav__logo-tag">OPERATIONS</span>
             </a>
-            <div class="nav-links">
-                <a href="#live" class="nav-link-3d" data-text="AO VIVO">
-                    <span class="link-3d-face">AO VIVO</span>
+            <div class="nav__links" id="navLinks">
+                <a href="#live" class="nav__link" data-section="live">
+                    <span class="nav__link-indicator"></span>
+                    <span class="nav__link-text">TRANSMISSÃO</span>
                 </a>
-                <a href="#tiktok" class="nav-link-3d" data-text="TIKTOK">
-                    <span class="link-3d-face">TIKTOK</span>
+                <a href="#tiktok" class="nav__link" data-section="tiktok">
+                    <span class="nav__link-indicator"></span>
+                    <span class="nav__link-text">CLIPES</span>
                 </a>
-                <a href="#youtube" class="nav-link-3d" data-text="YOUTUBE">
-                    <span class="link-3d-face">YOUTUBE</span>
+                <a href="#youtube" class="nav__link" data-section="youtube">
+                    <span class="nav__link-indicator"></span>
+                    <span class="nav__link-text">ARQUIVO</span>
                 </a>
-                <a href="#agenda" class="nav-link-3d" data-text="AGENDA">
-                    <span class="link-3d-face">AGENDA</span>
+                <a href="#agenda" class="nav__link" data-section="agenda">
+                    <span class="nav__link-indicator"></span>
+                    <span class="nav__link-text">AGENDA</span>
                 </a>
-                <a href="#jogos" class="nav-link-3d" data-text="JOGOS">
-                    <span class="link-3d-face">JOGOS</span>
+                <a href="#jogos" class="nav__link" data-section="jogos">
+                    <span class="nav__link-indicator"></span>
+                    <span class="nav__link-text">OPERAÇÕES</span>
                 </a>
-                <a href="#contato" class="nav-link-3d" data-text="CONTATO">
-                    <span class="link-3d-face">CONTATO</span>
+                <a href="#contato" class="nav__link" data-section="contato">
+                    <span class="nav__link-indicator"></span>
+                    <span class="nav__link-text">CONTATO</span>
                 </a>
             </div>
-            <button class="menu-toggle" id="menuToggle">
-                <span></span>
-                <span></span>
-                <span></span>
+            <button class="nav__menu" id="menuToggle" aria-label="Menu">
+                <span></span><span></span><span></span>
             </button>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero-3d" id="hero">
-        <div class="hero-content">
-            <div class="hero-title-3d">
-                <h1 class="title-3d">
-                    <span class="title-line" data-delay="0">BEM-VINDO AO</span>
-                    <span class="title-line title-main" data-delay="200">MUNDO</span>
-                    <span class="title-line title-accent" data-delay="400">3D</span>
-                    <span class="title-line" data-delay="600">DO KASTRUS</span>
-                </h1>
+    <!-- ═══════════════════ HERO SECTION ═══════════════════ -->
+    <section class="hero" id="hero">
+        <div class="hero__bg">
+            <div class="hero__bg-gradient"></div>
+            <div class="hero__bg-grid"></div>
+            <div class="hero__bg-particles" id="heroParticles"></div>
+            <div class="hero__light-beam"></div>
+            <div class="hero__light-beam hero__light-beam--2"></div>
+        </div>
+        <div class="hero__content">
+            <div class="hero__badge">
+                <span class="hero__badge-dot"></span>
+                <span>SISTEMA ONLINE — OPERAÇÕES ATIVAS</span>
             </div>
-            <p class="hero-subtitle">Conteúdo diário com gameplays, clipes e vídeos em uma experiência imersiva</p>
-            <div class="hero-buttons">
-                <a href="#live" class="btn-3d btn-primary">
-                    <span class="btn-3d-face">ASSISTIR NA TWITCH</span>
-                    <span class="btn-3d-edge"></span>
+            <h1 class="hero__title">
+                <span class="hero__title-line hero__title-line--1" data-reveal>BEM-VINDO ÀS</span>
+                <span class="hero__title-line hero__title-line--2" data-reveal>OPERAÇÕES</span>
+                <span class="hero__title-line hero__title-line--3" data-reveal>
+                    <span class="hero__title-accent">KASTRUS</span>
+                </span>
+            </h1>
+            <p class="hero__subtitle" data-reveal>
+                Conteúdo diário com gameplays, clipes e vídeos em uma experiência imersiva de alto impacto.
+            </p>
+            <div class="hero__actions" data-reveal>
+                <a href="#live" class="btn btn--primary">
+                    <span class="btn__bg"></span>
+                    <span class="btn__content">
+                        <i class="fas fa-signal"></i>
+                        <span>INICIAR TRANSMISSÃO</span>
+                    </span>
+                    <span class="btn__glow"></span>
                 </a>
-                <a href="#youtube" class="btn-3d btn-secondary">
-                    <span class="btn-3d-face">ÚLTIMOS VÍDEOS</span>
-                    <span class="btn-3d-edge"></span>
+                <a href="#youtube" class="btn btn--ghost">
+                    <span class="btn__content">
+                        <i class="fas fa-database"></i>
+                        <span>ACESSAR ARQUIVO</span>
+                    </span>
                 </a>
+            </div>
+            <div class="hero__stats" data-reveal>
+                <div class="hero__stat">
+                    <span class="hero__stat-value" data-count="15000">0</span>
+                    <span class="hero__stat-label">Seguidores</span>
+                </div>
+                <div class="hero__stat-divider"></div>
+                <div class="hero__stat">
+                    <span class="hero__stat-value" data-count="500">0</span>
+                    <span class="hero__stat-label">Vídeos</span>
+                </div>
+                <div class="hero__stat-divider"></div>
+                <div class="hero__stat">
+                    <span class="hero__stat-value" data-count="1200">0</span>
+                    <span class="hero__stat-label">Horas Live</span>
+                </div>
             </div>
         </div>
-        <div class="hero-3d-model">
-            <div class="cube-interactive" id="heroCube">
-                <div class="cube-face front">K</div>
-                <div class="cube-face back">A</div>
-                <div class="cube-face right">S</div>
-                <div class="cube-face left">T</div>
-                <div class="cube-face top">R</div>
-                <div class="cube-face bottom">U</div>
-            </div>
+        <div class="hero__scroll">
+            <span>ROLAR PARA BAIXO</span>
+            <div class="hero__scroll-line"></div>
         </div>
     </section>
 
-    <!-- Live Section -->
-    <section class="section-3d" id="live">
-        <div class="section-container">
-            <h2 class="section-title-3d">
-                <span class="title-3d-effect">AO VIVO</span>
-                <span class="title-glow-line"></span>
-            </h2>
-            <div class="live-content">
-                <div class="twitch-player-3d">
-                    <div class="player-frame-3d">
+    <!-- ═══════════════════ LIVE SECTION ═══════════════════ -->
+    <section class="section" id="live">
+        <div class="section__container">
+            <div class="section__header">
+                <span class="section__tag">01 — TRANSMISSÃO AO VIVO</span>
+                <h2 class="section__title">CENTRO DE <span class="text-accent">OPERAÇÕES</span></h2>
+                <div class="section__line"></div>
+            </div>
+            <div class="live">
+                <div class="live__player">
+                    <div class="live__player-frame">
                         <iframe 
                             src="https://player.twitch.tv/?channel=kastrus&parent=kastrus.com" 
                             frameborder="0" 
                             allowfullscreen="true" 
                             scrolling="no">
                         </iframe>
-                        <div class="player-overlay-3d">
-                            <div class="live-badge-3d">
-                                <span class="pulse-dot"></span>
-                                AO VIVO
+                        <div class="live__player-overlay">
+                            <div class="live__badge">
+                                <span class="live__badge-pulse"></span>
+                                <span>TRANSMITINDO AGORA</span>
+                            </div>
+                        </div>
+                        <div class="live__player-corners">
+                            <span></span><span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="live__info">
+                    <div class="panel">
+                        <div class="panel__header">
+                            <span class="panel__icon"><i class="fas fa-tower-broadcast"></i></span>
+                            <span class="panel__title">STATUS DA TRANSMISSÃO</span>
+                        </div>
+                        <div class="panel__body">
+                            <p>Conecte-se ao canal da Twitch para assistir às lives em tempo real. Ative as notificações para nunca perder uma operação.</p>
+                            <a href="https://www.twitch.tv/kastrus" target="_blank" class="btn btn--primary btn--full">
+                                <span class="btn__bg"></span>
+                                <span class="btn__content">
+                                    <i class="fab fa-twitch"></i>
+                                    <span>CONECTAR À TWITCH</span>
+                                </span>
+                                <span class="btn__glow"></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="panel panel--accent">
+                        <div class="panel__header">
+                            <span class="panel__icon"><i class="fas fa-radar"></i></span>
+                            <span class="panel__title">REDES SOCIAIS</span>
+                        </div>
+                        <div class="panel__body">
+                            <div class="social-grid">
+                                <a href="https://www.twitch.tv/kastrus" target="_blank" class="social-link social-link--twitch">
+                                    <i class="fab fa-twitch"></i>
+                                    <span>Twitch</span>
+                                </a>
+                                <a href="https://www.tiktok.com/@kastrusgamer" target="_blank" class="social-link social-link--tiktok">
+                                    <i class="fab fa-tiktok"></i>
+                                    <span>TikTok</span>
+                                </a>
+                                <a href="https://www.youtube.com/@KastrusGamer" target="_blank" class="social-link social-link--youtube">
+                                    <i class="fab fa-youtube"></i>
+                                    <span>YouTube</span>
+                                </a>
+                                <a href="https://instagram.com/kastrus_oficial" target="_blank" class="social-link social-link--instagram">
+                                    <i class="fab fa-instagram"></i>
+                                    <span>Instagram</span>
+                                </a>
+                                <a href="https://discord.gg/khastrus" target="_blank" class="social-link social-link--discord">
+                                    <i class="fab fa-discord"></i>
+                                    <span>Discord</span>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="live-info-3d">
-                    <div class="info-card-3d">
-                        <div class="card-3d-content">
-                            <h3>Siga na Twitch</h3>
-                            <p>Ative as notificações para não perder nenhuma live!</p>
-                            <a href="https://www.twitch.tv/kastrus" class="twitch-btn-3d" target="_blank">
-                                <i class="fab fa-twitch"></i>
-                                SEGUIR AGORA
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════ TIKTOK SECTION ═══════════════════ -->
+    <section class="section section--dark" id="tiktok">
+        <div class="section__container">
+            <div class="section__header">
+                <span class="section__tag">02 — INTELIGÊNCIA DE COMBATE</span>
+                <h2 class="section__title">CLIPES DO <span class="text-accent">TIKTOK</span></h2>
+                <div class="section__line"></div>
+            </div>
+            <div class="tiktok-grid">
+                <div class="clip-card" data-reveal>
+                    <div class="clip-card__inner">
+                        <div class="clip-card__front">
+                            <div class="clip-card__visual">
+                                <i class="fab fa-tiktok"></i>
+                                <div class="clip-card__scan"></div>
+                            </div>
+                            <div class="clip-card__label">@kastrusgamer</div>
+                        </div>
+                        <div class="clip-card__back">
+                            <h4>MELHORES MOMENTOS</h4>
+                            <p>Os melhores clipes das transmissões ao vivo, selecionados pela comunidade.</p>
+                            <a href="https://www.tiktok.com/@kastrusgamer" target="_blank" class="btn btn--accent">
+                                <span class="btn__content"><span>ACESSAR CLIPES</span></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="clip-card" data-reveal>
+                    <div class="clip-card__inner">
+                        <div class="clip-card__front">
+                            <div class="clip-card__visual">
+                                <i class="fas fa-bolt"></i>
+                                <div class="clip-card__scan"></div>
+                            </div>
+                            <div class="clip-card__label">@kastrusgamer</div>
+                        </div>
+                        <div class="clip-card__back">
+                            <h4>CLIPE INSANO</h4>
+                            <p>Momentos épicos que marcaram a história do canal.</p>
+                            <a href="https://www.tiktok.com/@kastrusgamer" target="_blank" class="btn btn--accent">
+                                <span class="btn__content"><span>VER AGORA</span></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="clip-card" data-reveal>
+                    <div class="clip-card__inner">
+                        <div class="clip-card__front">
+                            <div class="clip-card__visual">
+                                <i class="fas fa-users"></i>
+                                <div class="clip-card__scan"></div>
+                            </div>
+                            <div class="clip-card__label">@kastrusgamer</div>
+                        </div>
+                        <div class="clip-card__back">
+                            <h4>COMUNIDADE</h4>
+                            <p>Junte-se à comunidade e não perca nenhum momento.</p>
+                            <a href="https://www.tiktok.com/@kastrusgamer" target="_blank" class="btn btn--accent">
+                                <span class="btn__content"><span>SEGUIR AGORA</span></span>
                             </a>
                         </div>
                     </div>
@@ -126,217 +272,150 @@
         </div>
     </section>
 
-    <!-- TikTok Section -->
-    <section class="section-3d section-dark" id="tiktok">
-        <div class="section-container">
-            <h2 class="section-title-3d">
-                <span class="title-3d-effect">CLIPES DO TIKTOK</span>
-                <span class="title-glow-line"></span>
-            </h2>
-            <div class="tiktok-grid-3d">
-                <div class="tiktok-card-3d" data-tilt>
-                    <div class="card-3d-wrapper">
-                        <div class="card-3d-front">
-                            <div class="clip-placeholder">
-                                <i class="fab fa-tiktok"></i>
-                                <span>@kastrusgamer</span>
-                            </div>
-                        </div>
-                        <div class="card-3d-back">
-                            <h4>Melhores momentos</h4>
-                            <p>Os melhores clipes das lives</p>
-                            <a href="https://www.tiktok.com/@kastrusgamer" target="_blank" class="social-btn-3d">
-                                VER MAIS
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="tiktok-card-3d" data-tilt>
-                    <div class="card-3d-wrapper">
-                        <div class="card-3d-front">
-                            <div class="clip-placeholder">
-                                <i class="fab fa-tiktok"></i>
-                                <span>@kastrusgamer</span>
-                            </div>
-                        </div>
-                        <div class="card-3d-back">
-                            <h4>Clip insano</h4>
-                            <p>Momentos épicos que marcaram</p>
-                            <a href="https://www.tiktok.com/@kastrusgamer" target="_blank" class="social-btn-3d">
-                                VER MAIS
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="tiktok-card-3d" data-tilt>
-                    <div class="card-3d-wrapper">
-                        <div class="card-3d-front">
-                            <div class="clip-placeholder">
-                                <i class="fab fa-tiktok"></i>
-                                <span>@kastrusgamer</span>
-                            </div>
-                        </div>
-                        <div class="card-3d-back">
-                            <h4>Siga no TikTok</h4>
-                            <p>Para mais conteúdo exclusivo</p>
-                            <a href="https://www.tiktok.com/@kastrusgamer" target="_blank" class="social-btn-3d">
-                                SEGUIR
-                            </a>
-                        </div>
-                    </div>
-                </div>
+    <!-- ═══════════════════ YOUTUBE SECTION ═══════════════════ -->
+    <section class="section" id="youtube">
+        <div class="section__container">
+            <div class="section__header">
+                <span class="section__tag">03 — ARQUIVO DE OPERAÇÕES</span>
+                <h2 class="section__title">ÚLTIMOS <span class="text-accent">REGISTROS</span></h2>
+                <div class="section__line"></div>
             </div>
-        </div>
-    </section>
-
-    <!-- YouTube Section -->
-    <section class="section-3d" id="youtube">
-        <div class="section-container">
-            <h2 class="section-title-3d">
-                <span class="title-3d-effect">ÚLTIMOS VÍDEOS</span>
-                <span class="title-glow-line"></span>
-            </h2>
-            <div class="youtube-grid-3d" id="youtubeGrid">
-                <!-- Vídeos carregados dinamicamente via JS -->
-                <div class="youtube-loading">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Carregando vídeos...</p>
+            <div class="youtube-grid" id="youtubeGrid">
+                <div class="yt-loading">
+                    <div class="yt-loading__spinner"></div>
+                    <span>CARREGANDO ARQUIVOS...</span>
                 </div>
             </div>
             <div class="youtube-cta">
-                <a href="https://www.youtube.com/@KastrusGamer/shorts" target="_blank" class="btn-3d btn-youtube">
-                    <span class="btn-3d-face">
+                <a href="https://www.youtube.com/@KastrusGamer" target="_blank" class="btn btn--youtube">
+                    <span class="btn__content">
                         <i class="fab fa-youtube"></i>
-                        VER CANAL COMPLETO
+                        <span>ACESSAR CANAL COMPLETO</span>
                     </span>
                 </a>
             </div>
         </div>
     </section>
 
-    <!-- Agenda Section -->
-    <section class="section-3d section-dark" id="agenda">
-        <div class="section-container">
-            <h2 class="section-title-3d">
-                <span class="title-3d-effect">AGENDA</span>
-                <span class="title-glow-line"></span>
-            </h2>
-            <div class="agenda-3d">
-                <div class="schedule-card-3d">
-                    <div class="schedule-day-3d">
-                        <div class="day-icon-3d">
-                            <i class="fas fa-calendar-week"></i>
-                        </div>
-                        <h3>Segunda a Sexta</h3>
-                        <div class="time-3d">19:00 – 23:00</div>
-                        <p>Lives na Twitch</p>
+    <!-- ═══════════════════ AGENDA SECTION ═══════════════════ -->
+    <section class="section section--dark" id="agenda">
+        <div class="section__container">
+            <div class="section__header">
+                <span class="section__tag">04 — CRONOGRAMA DE OPERAÇÕES</span>
+                <h2 class="section__title">AGENDA <span class="text-accent">OPERACIONAL</span></h2>
+                <div class="section__line"></div>
+            </div>
+            <div class="schedule-grid">
+                <div class="schedule-card" data-reveal>
+                    <div class="schedule-card__header">
+                        <div class="schedule-card__icon"><i class="fas fa-calendar-days"></i></div>
+                        <div class="schedule-card__period">SEG — SEX</div>
+                    </div>
+                    <div class="schedule-card__time">19:00 — 23:00</div>
+                    <div class="schedule-card__desc">Lives na Twitch</div>
+                    <div class="schedule-card__status schedule-card__status--active">
+                        <span class="schedule-card__status-dot"></span>
+                        OPERAÇÕES NORMAIS
                     </div>
                 </div>
-                <div class="schedule-card-3d">
-                    <div class="schedule-day-3d">
-                        <div class="day-icon-3d">
-                            <i class="fas fa-gamepad"></i>
-                        </div>
-                        <h3>Sábado</h3>
-                        <div class="time-3d">15:00 – 19:00</div>
-                        <p>Comunidade & Ranked</p>
+                <div class="schedule-card" data-reveal>
+                    <div class="schedule-card__header">
+                        <div class="schedule-card__icon"><i class="fas fa-gamepad"></i></div>
+                        <div class="schedule-card__period">SÁBADO</div>
+                    </div>
+                    <div class="schedule-card__time">15:00 — 19:00</div>
+                    <div class="schedule-card__desc">Comunidade & Ranked</div>
+                    <div class="schedule-card__status schedule-card__status--special">
+                        <span class="schedule-card__status-dot"></span>
+                        MODO EQUIPE
                     </div>
                 </div>
-                <div class="schedule-card-3d">
-                    <div class="schedule-day-3d">
-                        <div class="day-icon-3d">
-                            <i class="fas fa-film"></i>
-                        </div>
-                        <h3>Domingo</h3>
-                        <div class="time-3d">Conteúdo Gravado</div>
-                        <p>YouTube e Twitch</p>
+                <div class="schedule-card" data-reveal>
+                    <div class="schedule-card__header">
+                        <div class="schedule-card__icon"><i class="fas fa-film"></i></div>
+                        <div class="schedule-card__period">DOMINGO</div>
+                    </div>
+                    <div class="schedule-card__time">CONTEÚDO GRAVADO</div>
+                    <div class="schedule-card__desc">YouTube & Twitch</div>
+                    <div class="schedule-card__status schedule-card__status--recon">
+                        <span class="schedule-card__status-dot"></span>
+                        RECONhecimento
                     </div>
                 </div>
             </div>
-            <p class="agenda-note">* Horários sujeitos a mudanças — siga nas redes para avisos.</p>
+            <p class="schedule-note">* Horários sujeitos a mudanças — siga nas redes para avisos em tempo real.</p>
         </div>
     </section>
 
-    <!-- Games Section -->
-    <section class="section-3d" id="jogos">
-        <div class="section-container">
-            <h2 class="section-title-3d">
-                <span class="title-3d-effect">CATÁLOGO DE JOGOS</span>
-                <span class="title-glow-line"></span>
-            </h2>
-            <div class="games-grid-3d">
-                <div class="game-card-3d" data-game="ffxiv">
-                    <div class="game-card-inner">
-                        <div class="game-card-front">
-                            <div class="game-icon-3d">
-                                <i class="fas fa-dragon"></i>
-                            </div>
+    <!-- ═══════════════════ GAMES SECTION ═══════════════════ -->
+    <section class="section" id="jogos">
+        <div class="section__container">
+            <div class="section__header">
+                <span class="section__tag">05 — ZONA DE OPERAÇÕES</span>
+                <h2 class="section__title">CATÁLOGO DE <span class="text-accent">MISSÕES</span></h2>
+                <div class="section__line"></div>
+            </div>
+            <div class="games-grid">
+                <div class="game-card" data-reveal data-game="ffxiv">
+                    <div class="game-card__inner">
+                        <div class="game-card__front">
+                            <div class="game-card__icon"><i class="fas fa-dragon"></i></div>
                             <h3>Final Fantasy XIV</h3>
+                            <div class="game-card__line"></div>
                         </div>
-                        <div class="game-card-back">
+                        <div class="game-card__back">
                             <h4>Final Fantasy XIV</h4>
                             <p>MMO de fantasia onde jogadores exploram Eorzea, enfrentam raids épicas e participam de uma economia dinâmica.</p>
-                            <div class="game-tags">
-                                <span>MMO</span>
-                                <span>Fantasia</span>
-                                <span>RPG</span>
+                            <div class="game-card__tags">
+                                <span>MMO</span><span>Fantasia</span><span>RPG</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="game-card-3d" data-game="conan">
-                    <div class="game-card-inner">
-                        <div class="game-card-front">
-                            <div class="game-icon-3d">
-                                <i class="fas fa-skull-crossbones"></i>
-                            </div>
+                <div class="game-card" data-reveal data-game="conan">
+                    <div class="game-card__inner">
+                        <div class="game-card__front">
+                            <div class="game-card__icon"><i class="fas fa-skull-crossbones"></i></div>
                             <h3>Conan Exiles</h3>
+                            <div class="game-card__line"></div>
                         </div>
-                        <div class="game-card-back">
+                        <div class="game-card__back">
                             <h4>Conan Exiles</h4>
-                            <p>Sobrevivência em mundo brutal inspirado no Conan, com construção de bases, combate PvP e eventos de servidor épicos.</p>
-                            <div class="game-tags">
-                                <span>Sobrevivência</span>
-                                <span>PvP</span>
-                                <span>Construção</span>
+                            <p>Sobrevivência em mundo brutal inspirado no Conan, com construção de bases, combate PvP e eventos de servidor.</p>
+                            <div class="game-card__tags">
+                                <span>Sobrevivência</span><span>PvP</span><span>Construção</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="game-card-3d" data-game="fortnite">
-                    <div class="game-card-inner">
-                        <div class="game-card-front">
-                            <div class="game-icon-3d">
-                                <i class="fas fa-parachute-box"></i>
-                            </div>
+                <div class="game-card" data-reveal data-game="fortnite">
+                    <div class="game-card__inner">
+                        <div class="game-card__front">
+                            <div class="game-card__icon"><i class="fas fa-parachute-box"></i></div>
                             <h3>Fortnite</h3>
+                            <div class="game-card__line"></div>
                         </div>
-                        <div class="game-card-back">
+                        <div class="game-card__back">
                             <h4>Fortnite</h4>
-                            <p>Battle Royale com construção, cores vibrantes e atualizações constantes; perfeito para partidas rápidas e competições.</p>
-                            <div class="game-tags">
-                                <span>Battle Royale</span>
-                                <span>Construção</span>
-                                <span>Competitivo</span>
+                            <p>Battle Royale com construção, cores vibrantes e atualizações constantes; perfeito para competições.</p>
+                            <div class="game-card__tags">
+                                <span>Battle Royale</span><span>Construção</span><span>Competitivo</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="game-card-3d" data-game="swtor">
-                    <div class="game-card-inner">
-                        <div class="game-card-front">
-                            <div class="game-icon-3d">
-                                <i class="fas fa-jedi"></i>
-                            </div>
+                <div class="game-card" data-reveal data-game="swtor">
+                    <div class="game-card__inner">
+                        <div class="game-card__front">
+                            <div class="game-card__icon"><i class="fas fa-jedi"></i></div>
                             <h3>Star Wars: The Old Republic</h3>
+                            <div class="game-card__line"></div>
                         </div>
-                        <div class="game-card-back">
+                        <div class="game-card__back">
                             <h4>SWTOR</h4>
-                            <p>RPG de aventura ambientado na galáxia Star Wars, com histórias ramificadas e batalhas em espaço-tempo.</p>
-                            <div class="game-tags">
-                                <span>RPG</span>
-                                <span>Star Wars</span>
-                                <span>Aventura</span>
+                            <p>RPG de aventura ambientado na galáxia Star Wars, com histórias ramificadas e batalhas épicas.</p>
+                            <div class="game-card__tags">
+                                <span>RPG</span><span>Star Wars</span><span>Aventura</span>
                             </div>
                         </div>
                     </div>
@@ -345,61 +424,79 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
-    <section class="section-3d section-dark" id="contato">
-        <div class="section-container">
-            <h2 class="section-title-3d">
-                <span class="title-3d-effect">CONTATO & PARCERIAS</span>
-                <span class="title-glow-line"></span>
-            </h2>
-            <div class="contact-content-3d">
-                <div class="contact-info-3d">
-                    <div class="info-block-3d">
-                        <h3>Quer fechar parceria?</h3>
-                        <p>Enviar press kit ou falar sobre eventos?</p>
-                        <a href="mailto:kastrusgamer@gmail.com" class="email-btn-3d">
-                            <i class="fas fa-envelope"></i>
-                            kastrusgamer@gmail.com
-                        </a>
+    <!-- ═══════════════════ CONTACT SECTION ═══════════════════ -->
+    <section class="section section--dark" id="contato">
+        <div class="section__container">
+            <div class="section__header">
+                <span class="section__tag">06 — CANAL DE COMUNICAÇÃO</span>
+                <h2 class="section__title">CONTATO & <span class="text-accent">PARCERIAS</span></h2>
+                <div class="section__line"></div>
+            </div>
+            <div class="contact">
+                <div class="contact__info">
+                    <div class="panel">
+                        <div class="panel__header">
+                            <span class="panel__icon"><i class="fas fa-satellite-dish"></i></span>
+                            <span class="panel__title">CANAL DIRETO</span>
+                        </div>
+                        <div class="panel__body">
+                            <p>Quer fechar parceria, enviar press kit ou falar sobre eventos? Entre em contato pelo canal oficial.</p>
+                            <a href="mailto:kastrusgamer@gmail.com" class="contact__email">
+                                <i class="fas fa-envelope"></i>
+                                <span>kastrusgamer@gmail.com</span>
+                            </a>
+                        </div>
                     </div>
-                    <div class="social-links-3d">
-                        <a href="https://instagram.com/kastrus_oficial" target="_blank" class="social-icon-3d instagram">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="https://discord.gg/khastrus" target="_blank" class="social-icon-3d discord">
-                            <i class="fab fa-discord"></i>
-                        </a>
-                        <a href="https://www.twitch.tv/kastrus" target="_blank" class="social-icon-3d twitch">
-                            <i class="fab fa-twitch"></i>
-                        </a>
-                        <a href="https://www.tiktok.com/@kastrusgamer" target="_blank" class="social-icon-3d tiktok">
-                            <i class="fab fa-tiktok"></i>
-                        </a>
-                        <a href="https://www.youtube.com/@KastrusGamer" target="_blank" class="social-icon-3d youtube">
-                            <i class="fab fa-youtube"></i>
-                        </a>
+                    <div class="panel">
+                        <div class="panel__header">
+                            <span class="panel__icon"><i class="fas fa-network-wired"></i></span>
+                            <span class="panel__title">REDES DE CONTATO</span>
+                        </div>
+                        <div class="panel__body">
+                            <div class="social-grid social-grid--large">
+                                <a href="https://instagram.com/kastrus_oficial" target="_blank" class="social-link social-link--instagram">
+                                    <i class="fab fa-instagram"></i><span>Instagram</span>
+                                </a>
+                                <a href="https://discord.gg/khastrus" target="_blank" class="social-link social-link--discord">
+                                    <i class="fab fa-discord"></i><span>Discord</span>
+                                </a>
+                                <a href="https://www.twitch.tv/kastrus" target="_blank" class="social-link social-link--twitch">
+                                    <i class="fab fa-twitch"></i><span>Twitch</span>
+                                </a>
+                                <a href="https://www.tiktok.com/@kastrusgamer" target="_blank" class="social-link social-link--tiktok">
+                                    <i class="fab fa-tiktok"></i><span>TikTok</span>
+                                </a>
+                                <a href="https://www.youtube.com/@KastrusGamer" target="_blank" class="social-link social-link--youtube">
+                                    <i class="fab fa-youtube"></i><span>YouTube</span>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="contact-form-3d">
-                    <form id="contactForm">
-                        <div class="form-group-3d">
-                            <input type="text" id="name" required placeholder=" ">
-                            <label for="name">Nome</label>
-                            <div class="input-line-3d"></div>
+                <div class="contact__form-wrap">
+                    <form class="form" id="contactForm">
+                        <div class="form__group">
+                            <input type="text" id="name" required autocomplete="off" placeholder=" ">
+                            <label for="name">IDENTIFICAÇÃO</label>
+                            <div class="form__line"></div>
                         </div>
-                        <div class="form-group-3d">
-                            <input type="email" id="email" required placeholder=" ">
-                            <label for="email">E-mail</label>
-                            <div class="input-line-3d"></div>
+                        <div class="form__group">
+                            <input type="email" id="email" required autocomplete="off" placeholder=" ">
+                            <label for="email">FREQÜÊNCIA DE COMUNICAÇÃO</label>
+                            <div class="form__line"></div>
                         </div>
-                        <div class="form-group-3d">
+                        <div class="form__group">
                             <textarea id="message" rows="4" required placeholder=" "></textarea>
-                            <label for="message">Mensagem</label>
-                            <div class="input-line-3d"></div>
+                            <label for="message">MENSAGEM</label>
+                            <div class="form__line"></div>
                         </div>
-                        <button type="submit" class="submit-btn-3d">
-                            <span class="btn-text">ENVIAR MENSAGEM</span>
-                            <span class="btn-icon"><i class="fas fa-paper-plane"></i></span>
+                        <button type="submit" class="btn btn--primary btn--full">
+                            <span class="btn__bg"></span>
+                            <span class="btn__content">
+                                <span>TRANSMITIR MENSAGEM</span>
+                                <i class="fas fa-paper-plane"></i>
+                            </span>
+                            <span class="btn__glow"></span>
                         </button>
                     </form>
                 </div>
@@ -407,19 +504,20 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer-3d">
-        <div class="footer-container">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <span class="logo-text">KA</span><span class="logo-glow">STRUS</span>
+    <!-- ═══════════════════ FOOTER ═══════════════════ -->
+    <footer class="footer">
+        <div class="footer__inner">
+            <div class="footer__top">
+                <div class="footer__brand">
+                    <span class="footer__logo">◆ KASTRUS</span>
+                    <p>Operações de conteúdo em tempo real.</p>
                 </div>
-                <div class="footer-links">
+                <div class="footer__links">
                     <a href="#">Política de Privacidade</a>
                     <a href="#">Termos</a>
                     <a href="https://github.com/sponsors/alexc" target="_blank">Patrocinar</a>
                 </div>
-                <div class="footer-social">
+                <div class="footer__socials">
                     <a href="https://www.twitch.tv/kastrus" target="_blank"><i class="fab fa-twitch"></i></a>
                     <a href="https://www.tiktok.com/@kastrusgamer" target="_blank"><i class="fab fa-tiktok"></i></a>
                     <a href="https://www.youtube.com/@KastrusGamer" target="_blank"><i class="fab fa-youtube"></i></a>
@@ -427,13 +525,16 @@
                     <a href="https://discord.gg/khastrus" target="_blank"><i class="fab fa-discord"></i></a>
                 </div>
             </div>
-            <div class="footer-copyright">
-                <p>&copy; 2024 Kastrus. Todos os direitos reservados.</p>
+            <div class="footer__bottom">
+                <span>© 2026 KASTRUS. TODOS OS DIREITOS RESERVADOS.</span>
+                <span class="footer__status">
+                    <span class="footer__status-dot"></span>
+                    SISTEMA OPERACIONAL
+                </span>
             </div>
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="script.js"></script>
 </body>
 </html>
