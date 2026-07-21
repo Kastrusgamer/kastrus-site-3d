@@ -342,24 +342,59 @@
         });
     }
 
+    /* ─── PROXY SYSTEM ─── */
+    const CORS_PROXIES = [
+        url => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`,
+        url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+        url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+    ];
+
+    async function fetchWithFallback(url, parser) {
+        for (const proxy of CORS_PROXIES) {
+            try {
+                const ctrl = new AbortController();
+                const timer = setTimeout(() => ctrl.abort(), 6000);
+                const res = await fetch(proxy(url), { signal: ctrl.signal });
+                clearTimeout(timer);
+                if (!res.ok) continue;
+                return await parser(res);
+            } catch(e) { continue; }
+        }
+        throw new Error('All proxies failed');
+    }
+
     /* ─── YOUTUBE ─── */
     const YT_ID = 'UCBYnAv5IkSBovWPNTb9YlCA';
     const YT_RSS = `https://www.youtube.com/feeds/videos.xml?channel_id=${YT_ID}`;
-    const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
 
     async function initYouTube() {
         const grid = document.getElementById('ytGrid');
         if (!grid) return;
 
         try {
-            const res = await fetch(`${RSS2JSON}${encodeURIComponent(YT_RSS)}`);
-            const data = await res.json();
-            if (!data.items || !data.items.length) throw new Error('No videos');
+            const data = await fetchWithFallback(YT_RSS, async (res) => {
+                const ct = res.headers.get('content-type') || '';
+                if (ct.includes('json')) {
+                    const j = await res.json();
+                    return j.items || [];
+                }
+                const text = await res.text();
+                const xml = new DOMParser().parseFromString(text, 'text/xml');
+                const entries = xml.querySelectorAll('entry');
+                return Array.from(entries).map(e => ({
+                    title: e.querySelector('title')?.textContent || '',
+                    link: e.querySelector('link')?.getAttribute('href') || e.querySelector('link')?.textContent || '',
+                    thumbnail: e.querySelector('media\\:thumbnail, thumbnail')?.getAttribute('url') || '',
+                    pubDate: e.querySelector('published')?.textContent || ''
+                }));
+            });
 
-            const videos = data.items.map(item => ({
+            if (!data.length) throw new Error('No videos');
+
+            const videos = data.map(item => ({
                 id: (item.link || '').match(/v=([a-zA-Z0-9_-]{11})/)?.[1] || '',
                 title: item.title || '',
-                thumb: item.thumbnail || item.enclosure?.link || '',
+                thumb: item.thumbnail || '',
                 views: '0',
                 published: item.pubDate || ''
             })).filter(v => v.id);
@@ -511,28 +546,49 @@
 
     async function fetchFeed(feed) {
         try {
-            const res = await fetch(`${RSS2JSON}${encodeURIComponent(feed.url)}`);
-            const data = await res.json();
-            if (!data.items) return [];
+            return await fetchWithFallback(feed.url, async (res) => {
+                const ct = res.headers.get('content-type') || '';
+                let items = [];
 
-            return data.items.slice(0, 10).map(item => {
-                const title = item.title || '';
-                const link = item.link || '#';
-                const desc = cleanHtml(item.description || item.summary || item.content || '');
-                const date = item.pubDate || item.published || item.updated || '';
-                const img = item.thumbnail || item.enclosure?.link || extractImageFromDesc(item.description || '');
+                if (ct.includes('json')) {
+                    const data = await res.json();
+                    items = data.items || [];
+                    return items.slice(0, 10).map(item => {
+                        const desc = cleanHtml(item.description || item.summary || item.content || '');
+                        return {
+                            title: item.title || '',
+                            link: item.link || '#',
+                            desc,
+                            date: item.pubDate || item.published || item.updated || '',
+                            img: item.thumbnail || item.enclosure?.link || extractImageFromDesc(item.description || ''),
+                            source: feed.name,
+                            category: feed.cat,
+                            readTime: Math.max(2, Math.ceil(desc.split(' ').length / 200)) + ' min',
+                        };
+                    }).filter(a => a.title && a.title.length > 5);
+                }
 
-                return {
-                    title,
-                    link,
-                    desc,
-                    date,
-                    img,
-                    source: feed.name,
-                    category: feed.cat,
-                    readTime: Math.max(2, Math.ceil(desc.split(' ').length / 200)) + ' min',
-                };
-            }).filter(a => a.title && a.title.length > 5);
+                const text = await res.text();
+                const xml = new DOMParser().parseFromString(text, 'text/xml');
+                items = xml.querySelectorAll('item');
+                if (!items.length) items = xml.querySelectorAll('entry');
+
+                return Array.from(items).slice(0, 10).map(item => {
+                    const title = item.querySelector('title')?.textContent || '';
+                    const link = item.querySelector('link')?.getAttribute('href') || item.querySelector('link')?.textContent || '#';
+                    const desc = cleanHtml(item.querySelector('description')?.textContent || item.querySelector('summary')?.textContent || item.querySelector('content')?.textContent || '');
+                    const date = item.querySelector('pubDate')?.textContent || item.querySelector('published')?.textContent || '';
+                    const media = item.querySelector('media\\:thumbnail, thumbnail, media\\:content');
+                    const img = media?.getAttribute('url') || extractImageFromDesc(item.querySelector('description')?.textContent || '');
+
+                    return {
+                        title, link, desc, date, img,
+                        source: feed.name,
+                        category: feed.cat,
+                        readTime: Math.max(2, Math.ceil(desc.split(' ').length / 200)) + ' min',
+                    };
+                }).filter(a => a.title && a.title.length > 5);
+            });
         } catch (e) {
             console.warn(`Feed error [${feed.name}]:`, e);
             return [];
